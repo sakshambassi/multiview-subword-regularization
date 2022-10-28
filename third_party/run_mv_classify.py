@@ -78,8 +78,7 @@ PROCESSORS = {
 def compute_metrics(preds, labels):
   scores = {
     "acc": (preds == labels).mean(), 
-    "num": len(
-      preds), 
+    "num": len(preds),
     "correct": (preds == labels).sum()
   }
   return scores
@@ -106,6 +105,10 @@ class ConcatDataset(torch.utils.data.Dataset):
 
 def train(args, train_dataset, dropped_train_dataset, model, tokenizer, lang2id=None):
   """Train the model."""
+  print(f'SB-DEBUG Inside model train function args passed:{args}')
+  print(f'SB-DEBUG Inside model train function for lang2id:{lang2id}')
+  print(f'SB-DEBUG Inside model train function for train_dataset:{train_dataset}, dropped_train_dataset:{dropped_train_dataset}')
+
   if args.local_rank in [-1, 0]:
     tb_writer = SummaryWriter()
 
@@ -135,10 +138,13 @@ def train(args, train_dataset, dropped_train_dataset, model, tokenizer, lang2id=
     optimizer, num_warmup_steps=args.warmup_steps, num_training_steps=t_total
   )
 
+  print(f'SB-DEBUG Inside train function saved optimizer path:{os.path.join(args.model_name_or_path, "optimizer.pt")}')
+  print(f'SB-DEBUG Inside train function saved scheduler path:{os.path.join(args.model_name_or_path, "scheduler.pt")}')
+
   # Check if saved optimizer or scheduler states exist
   if os.path.isfile(os.path.join(args.model_name_or_path, "optimizer.pt")) and os.path.isfile(
-    os.path.join(args.model_name_or_path, "scheduler.pt")
-  ):
+    os.path.join(args.model_name_or_path, "scheduler.pt")):
+    logger.info(f'SB-DEBUG Inside train function- found saved optimizer and scheduler')
     # Load in optimizer and scheduler states
     optimizer.load_state_dict(torch.load(os.path.join(args.model_name_or_path, "optimizer.pt")))
     scheduler.load_state_dict(torch.load(os.path.join(args.model_name_or_path, "scheduler.pt")))
@@ -216,7 +222,9 @@ def train(args, train_dataset, dropped_train_dataset, model, tokenizer, lang2id=
         )  # XLM don't use segment_ids
       if args.model_type == "xlm":
         inputs["langs"] = batch[4]
+      print(f'SB-DEBUG Inside train function - inputs to model: {inputs}')
       outputs = model(**inputs)
+      print(f'SB-DEBUG Inside train function - outputs from model: {outputs}')
       loss = outputs[0]
       logits = outputs[-1]
 
@@ -300,7 +308,7 @@ def train(args, train_dataset, dropped_train_dataset, model, tokenizer, lang2id=
 
           if args.save_only_best_checkpoint:          
             result = evaluate(args, model, tokenizer, split='dev', language=args.train_language, lang2id=lang2id, prefix=str(global_step))
-            logger.info(" Dev accuracy {} = {}".format(args.train_language, result['acc']))
+            logger.info(" Dev accuracy on train_language {} = {}".format(args.train_language, result['acc']))
             if result['acc'] > best_score:
               logger.info(" result['acc']={} > best_score={}".format(result['acc'], best_score))
               output_dir = os.path.join(args.output_dir, "checkpoint-best")
@@ -441,7 +449,20 @@ def evaluate(args, model, tokenizer, split='train', language='en', lang2id=None,
 
 
 def load_and_cache_examples(args, task, tokenizer, split='train', language='en', lang2id=None, evaluate=False, bpe_drop=0):
-  # Make sure only the first process in distributed training process the 
+  """ Loads dataset from file, processes it, provides combined dataset in TensorDataset type
+
+  @param args: command line args
+  @param task: NLP task like 'xnli'
+  @param tokenizer:
+  @param split:
+  @param language:
+  @param lang2id:
+  @param evaluate:
+  @param bpe_drop:
+  @return:
+  """
+  print(f'SB-DEBUG Inside load_and_cache_examples function for task:{task}, language:{language}, with bpe_drop:{bpe_drop}')
+  # Make sure only the first process in distributed training process the
   # dataset, and the others will use the cache
   if args.local_rank not in [-1, 0] and not evaluate:
     torch.distributed.barrier()
@@ -531,6 +552,7 @@ def load_and_cache_examples(args, task, tokenizer, split='train', language='en',
     dataset = TensorDataset(all_input_ids, all_attention_mask, all_token_type_ids, all_labels)
   return dataset
 
+# SB-DEBUG: so far this function is not used
 def load_examples(args, task, tokenizer, split='train', language='en', lang2id=None, evaluate=False, bpe_drop=0):
   # Make sure only the first process in distributed training process the 
   # dataset, and the others will use the cache
