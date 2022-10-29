@@ -542,6 +542,9 @@ def load_and_cache_examples(args, task, tokenizer, split='train', language='en',
   all_token_type_ids = torch.tensor([f.token_type_ids for f in features], dtype=torch.long)
   if output_mode == "classification":
     all_labels = torch.tensor([f.label for f in features], dtype=torch.long)
+    if evaluate==True:
+      print(f'SB-DEBUG Inside evaluate, the labels in code are:{all_labels}')
+
   else:
     raise ValueError("No other `output_mode` for {}.".format(args.task_name))
 
