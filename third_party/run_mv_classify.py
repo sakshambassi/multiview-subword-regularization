@@ -31,20 +31,20 @@ from torch.utils.data.distributed import DistributedSampler
 from tqdm import tqdm, trange
 
 from transformers import (
-  WEIGHTS_NAME,
-  AdamW,
-  BertConfig,
-  BertForSequenceClassification,
-  BertTokenizer,
-  XLMConfig,
-  XLMForSequenceClassification,
-  XLMTokenizer,
-  XLMRobertaConfig,
-  XLMRobertaTokenizer,
-  XLMRobertaForSequenceClassification,
+          WEIGHTS_NAME,
+            AdamW,
+              BertConfig,
+                BertForSequenceClassification,
+                  BertTokenizer,
+                    XLMConfig,
+                      XLMForSequenceClassification,
+                        XLMTokenizer,
+                          RobertaConfig,
+  RobertaTokenizer,
+  RobertaForSequenceClassification,
   get_linear_schedule_with_warmup,
+  BERT_PRETRAINED_CONFIG_ARCHIVE_MAP
 )
-
 from processors.utils import convert_examples_to_features
 from processors.xnli import XnliProcessor
 from processors.pawsx import PawsxProcessor
@@ -59,14 +59,14 @@ import utils
 logger = logging.getLogger(__name__)
 
 ALL_MODELS = sum(
-  (tuple(conf.pretrained_config_archive_map.keys()) 
-    for conf in (BertConfig, XLMConfig, XLMRobertaConfig)),
-  ()
+        (tuple(BERT_PRETRAINED_CONFIG_ARCHIVE_MAP.keys())
+            for conf in (BertConfig, XLMConfig, RobertaConfig)),
+        ()
 )
 
 MODEL_CLASSES = {
   "bert": (BertConfig, BertForSequenceClassification, BertTokenizer),
-  "xlmr": (XLMRobertaConfig, XLMRobertaForSequenceClassification, XLMRobertaTokenizer),
+  "roberta": (RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer)
 }
 
 PROCESSORS = {
