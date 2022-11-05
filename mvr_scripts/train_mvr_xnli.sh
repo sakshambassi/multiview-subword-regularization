@@ -23,7 +23,7 @@ export CUDA_VISIBLE_DEVICES=$GPU
 
 TASK='xnli'
 LR=2e-5
-EPOCH=1
+EPOCH=5
 MAXL=128
 TRAIN_LANG="en"
 LANGS="ar,bg,de,el,en,es,fr,hi,ru,sw,th,tr,ur,vi,zh"
