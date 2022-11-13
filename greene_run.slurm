@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --job-name=mvr
+#SBATCH --job-name=base
 #SBATCH --nodes=1
-#SBATCH --output=mvr.out
-#SBATCH --error=mvr.err
+#SBATCH --output=base.out
+#SBATCH --error=base.err
 #SBATCH --cpus-per-task=5
 #SBATCH --mem=64GB
 #SBATCH --time=52:00:00
@@ -10,5 +10,5 @@
 
 eval "$(conda shell.bash hook)"
 conda activate nlp_ra
-bash mvr_scripts/train_mvr_xnli.sh
+bash mvr_scripts/train_baseline_xnli.sh
 
