@@ -23,7 +23,7 @@ export CUDA_VISIBLE_DEVICES=$GPU
 
 TASK='xnli'
 LR=2e-5
-EPOCH=5
+EPOCH=15
 MAXL=128
 TRAIN_LANG="en"
 LANGS="ar,bg,de,el,en,es,fr,hi,ru,sw,th,tr,ur,vi,zh"
@@ -44,13 +44,13 @@ if [ $MODEL == "xlm-mlm-100-1280" ] || [ $MODEL == "xlm-roberta-large" ]; then
   BATCH_SIZE=2
   GRAD_ACC=16
 else
-  BATCH_SIZE=8
+  BATCH_SIZE=128
   GRAD_ACC=4
 fi
 
 for SEED in 1;
 do
-SAVE_DIR="$OUT_DIR/$TASK/${MODEL}-LR${LR}-epoch${EPOCH}-MaxLen${MAXL}_train${TRAIN_LANG}_mbped${BPE_DROP}_kl${KL}_s${SEED}/"
+SAVE_DIR="$OUT_DIR/$TASK/mvr-${MODEL}-LR${LR}-epoch${EPOCH}-MaxLen${MAXL}_train${TRAIN_LANG}_mbped${BPE_DROP}_kl${KL}_s${SEED}/"
 mkdir -p $SAVE_DIR
 
 python $PWD/third_party/run_mv_classify.py \
@@ -68,7 +68,7 @@ python $PWD/third_party/run_mv_classify.py \
   --num_train_epochs $EPOCH \
   --max_seq_length $MAXL \
   --output_dir $SAVE_DIR/ \
-  --save_steps 100 \
+  --save_steps 1000 \
   --eval_all_checkpoints \
   --log_file 'train' \
   --predict_languages $LANGS \

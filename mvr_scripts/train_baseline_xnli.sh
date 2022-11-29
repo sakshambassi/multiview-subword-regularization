@@ -23,7 +23,7 @@ export CUDA_VISIBLE_DEVICES=$GPU
 
 TASK='xnli'
 LR=2e-5
-EPOCH=5
+EPOCH=15
 MAXL=128
 LANGS="ar,bg,de,el,en,es,fr,hi,ru,sw,th,tr,ur,vi,zh"
 LC=""
@@ -46,7 +46,7 @@ else
   LR=2e-5
 fi
 
-SAVE_DIR="$OUT_DIR/$TASK/${MODEL}-LR${LR}-epoch${EPOCH}-MaxLen${MAXL}/"
+SAVE_DIR="$OUT_DIR/$TASK/base-${MODEL}-LR${LR}-epoch${EPOCH}-MaxLen${MAXL}/"
 mkdir -p $SAVE_DIR
 
 python $PWD/third_party/run_baseline_classify.py \
@@ -64,7 +64,7 @@ python $PWD/third_party/run_baseline_classify.py \
   --num_train_epochs $EPOCH \
   --max_seq_length $MAXL \
   --output_dir $SAVE_DIR/ \
-  --save_steps 100 \
+  --save_steps 1000 \
   --eval_all_checkpoints \
   --log_file 'train' \
   --predict_languages $LANGS \

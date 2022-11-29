@@ -350,7 +350,8 @@ def train(args, train_dataset, dropped_train_dataset, model, tokenizer, lang2id=
 
     if args.local_rank in [-1, 0]:
         tb_writer.close()
-
+    if global_step==0:
+        global_step = 1
     return global_step, tr_loss / global_step, best_score, best_checkpoint
 
 
@@ -858,6 +859,8 @@ def main():
 
     args.model_type = args.model_type.lower()
     config_class, model_class, tokenizer_class = MODEL_CLASSES[args.model_type]
+    print(f'SB-DEBUG args.model_name_or_path= {args.model_name_or_path}')
+    print(f'SB-DEBUG args.config_name = {args.config_name}')
     config = config_class.from_pretrained(
         args.config_name if args.config_name else args.model_name_or_path,
         num_labels=num_labels,
@@ -972,11 +975,15 @@ def main():
 
     # Prediction
     if args.do_predict and args.local_rank in [-1, 0]:
-        tokenizer = tokenizer_class.from_pretrained(
-            args.model_name_or_path if args.model_name_or_path else best_checkpoint, do_lower_case=args.do_lower_case)
+        print("\n\n\n\nSB-DEBUG doing prediction on test set\n\n\n\n")
+        print(f"args.model_name_or_path : {args.model_name_or_path}")
+        #tokenizer = tokenizer_class.from_pretrained(
+        #    args.model_name_or_path if args.model_name_or_path else best_checkpoint, do_lower_case=args.do_lower_case)
+        tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name, do_lower_case=args.do_lower_case)
         model = model_class.from_pretrained(best_checkpoint)
         model.to(args.device)
         output_predict_file = os.path.join(args.output_dir, args.test_split + '_results.txt')
+        print(f"output_predict_file = {output_predict_file}\n\n")
         total = total_correct = 0.0
         with open(output_predict_file, 'a') as writer:
             writer.write('======= Predict using the model from {} for {}:\n'.format(best_checkpoint, args.test_split))
