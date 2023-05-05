@@ -25,6 +25,7 @@ TASK='xnli'
 LR=2e-5
 EPOCH=15
 MAXL=128
+TRAIN_LANG="en"
 LANGS="ar,bg,de,el,en,es,fr,hi,ru,sw,th,tr,ur,vi,zh"
 LC=""
 if [ $MODEL == "bert-base-multilingual-cased" ]; then
@@ -46,13 +47,15 @@ else
   LR=2e-5
 fi
 
-SAVE_DIR="$OUT_DIR/$TASK/base-${MODEL}-LR${LR}-epoch${EPOCH}-MaxLen${MAXL}/"
+for SEED in 64;
+do
+SAVE_DIR="$OUT_DIR/$TASK/baseline-${MODEL}-LR${LR}-epoch${EPOCH}-MaxLen${MAXL}_train${TRAIN_LANG}_s${SEED}/"
 mkdir -p $SAVE_DIR
 
 python $PWD/third_party/run_baseline_classify.py \
   --model_type $MODEL_TYPE \
   --model_name_or_path $MODEL \
-  --train_language en \
+  --train_language $TRAIN_LANG \
   --task_name $TASK \
   --do_train \
   --do_eval \
@@ -70,4 +73,6 @@ python $PWD/third_party/run_baseline_classify.py \
   --predict_languages $LANGS \
   --save_only_best_checkpoint \
   --overwrite_output_dir \
+  --seed $SEED \
   --eval_test_set $LC
+done

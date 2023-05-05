@@ -48,7 +48,7 @@ else
   GRAD_ACC=4
 fi
 
-for SEED in 1;
+for SEED in 128;
 do
 SAVE_DIR="$OUT_DIR/$TASK/mvr-${MODEL}-LR${LR}-epoch${EPOCH}-MaxLen${MAXL}_train${TRAIN_LANG}_mbped${BPE_DROP}_kl${KL}_s${SEED}/"
 mkdir -p $SAVE_DIR

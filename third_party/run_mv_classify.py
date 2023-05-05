@@ -724,7 +724,7 @@ def main():
 
     parser.add_argument("--per_gpu_train_batch_size", default=8, type=int, help="Batch size per GPU/CPU for training.")
     parser.add_argument(
-        "--per_gpu_eval_batch_size", default=8, type=int, help="Batch size per GPU/CPU for evaluation."
+        "--per_gpu_eval_batch_size", default=128, type=int, help="Batch size per GPU/CPU for evaluation."
     )
     parser.add_argument(
         "--gradient_accumulation_steps",
@@ -977,9 +977,8 @@ def main():
     if args.do_predict and args.local_rank in [-1, 0]:
         print("\n\n\n\nSB-DEBUG doing prediction on test set\n\n\n\n")
         print(f"args.model_name_or_path : {args.model_name_or_path}")
-        #tokenizer = tokenizer_class.from_pretrained(
-        #    args.model_name_or_path if args.model_name_or_path else best_checkpoint, do_lower_case=args.do_lower_case)
-        tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name, do_lower_case=args.do_lower_case)
+        tokenizer = tokenizer_class.from_pretrained(args.model_name_or_path if args.model_name_or_path else best_checkpoint, do_lower_case=args.do_lower_case)
+        # tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name, do_lower_case=args.do_lower_case)
         model = model_class.from_pretrained(best_checkpoint)
         model.to(args.device)
         output_predict_file = os.path.join(args.output_dir, args.test_split + '_results.txt')
